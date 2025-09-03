@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Clock</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      font-size: 3rem;
+      color: #0ff;
+      text-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
+      margin-bottom: 20px;
+    }
+    .clock, .timer, .stopwatch {
+      font-size: 2.5rem;
+      margin: 15px 0;
+      text-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
+    }
+    .controls {
+      margin: 10px 0;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      background: #111;
+      color: #0ff;
+      box-shadow: 0 0 10px #0ff;
+      transition: 0.3s;
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px #0ff;
+    }
+    .color-picker {
+      margin: 20px;
+    }
+    .credits {
+      position: absolute;
+      bottom: 20px;
+      font-size: 1rem;
+      color: #999;
+    }
+    .credits a {
+      color: #0ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌙 Neon Clock</h1>
+
+  <!-- Digital Clock -->
+  <div class="clock" id="clock">00:00:00</div>
+
+  <!-- Timer -->
+  <h2>⏳ Timer</h2>
+  <div class="timer" id="timer">00:00</div>
+  <div class="controls">
+    <input type="number" id="minutesInput" placeholder="Minutes" min="0" style="padding:5px; border-radius:5px;">
+    <button onclick="startTimer()">Start</button>
+    <button onclick="resetTimer()">Reset</button>
+  </div>
+
+  <!-- Stopwatch -->
+  <h2>⏱ Stopwatch</h2>
+  <div class="stopwatch" id="stopwatch">00:00:00</div>
+  <div class="controls">
+    <button onclick="startStopwatch()">Start</button>
+    <button onclick="stopStopwatch()">Stop</button>
+    <button onclick="resetStopwatch()">Reset</button>
+  </div>
+
+  <!-- Color Picker -->
+  <div class="color-picker">
+    <label for="colorInput">🎨 Pick Neon Color:</label>
+    <input type="color" id="colorInput">
+  </div>
+
+  <div class="credits">
+    Built by <a href="#">SK</a> ✨
+  </div>
+
+  <script>
+    // Digital Clock
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById("clock").textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Timer
+    let timerInterval;
+    function startTimer() {
+      let minutes = document.getElementById("minutesInput").value;
+      let time = minutes * 60;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (time <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById("timer").textContent = "00:00";
+          alert("⏳ Time's up!");
+        } else {
+          let m = Math.floor(time / 60);
+          let s = time % 60;
+          document.getElementById("timer").textContent =
+            `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          time--;
+        }
+      }, 1000);
+    }
+    function resetTimer() {
+      clearInterval(timerInterval);
+      document.getElementById("timer").textContent = "00:00";
+      document.getElementById("minutesInput").value = "";
+    }
+
+    // Stopwatch
+    let stopwatchInterval;
+    let elapsed = 0;
+    function startStopwatch() {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = setInterval(() => {
+        elapsed++;
+        let h = Math.floor(elapsed / 3600);
+        let m = Math.floor((elapsed % 3600) / 60);
+        let s = elapsed % 60;
+        document.getElementById("stopwatch").textContent =
+          `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }, 1000);
+    }
+    function stopStopwatch() {
+      clearInterval(stopwatchInterval);
+    }
+    function resetStopwatch() {
+      clearInterval(stopwatchInterval);
+      elapsed = 0;
+      document.getElementById("stopwatch").textContent = "00:00:00";
+    }
+
+    // Color Picker
+    const colorInput = document.getElementById("colorInput");
+    colorInput.addEventListener("input", () => {
+      const color = colorInput.value;
+      document.querySelectorAll(".clock, .timer, .stopwatch, h1, button, .credits a").forEach(el => {
+        el.style.color = color;
+        el.style.textShadow = `0 0 20px ${color}, 0 0 40px ${color}`;
+      });
+      document.querySelectorAll("button").forEach(btn => {
+        btn.style.boxShadow = `0 0 10px ${color}`;
+      });
+    });
+  </script>
+</body>
+</html>
